@@ -19,6 +19,7 @@ export function GeneratorForm({ onImageGenerated, loading, setLoading }) {
   const { user } = useAuth()
   const { toast } = useToast()
 
+  console.log(user)
   const handleSubmit = async (e) => {
     e.preventDefault()
 
