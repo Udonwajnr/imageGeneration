@@ -18,18 +18,38 @@ export default function GalleryPage() {
   }, [user])
 
   const fetchImages = async () => {
-    try {
-      const response = await fetch(`/api/images/${user.id}`)
-      if (response.ok) {
-        const data = await response.json()
-        setImages(data)
+  try {
+    const response = await fetch(`/api/images/${user.id}`)
+    if (response.ok) {
+      const data = await response.json()
+      if (Array.isArray(data.images)) {
+        console.log(
+          "[v0] Fetched images:",
+          data.images.map((img) => ({
+            id: img.id,
+            imageUrlLength: img.imageUrl?.length,
+            imageUrlStart: img.imageUrl?.substring(0, 50),
+            isDataUrl: img.imageUrl?.startsWith("data:"),
+          }))
+        )
+        setImages(data.images) // ✅ FIX: use data.images
+      } else {
+        console.error("[v0] API returned invalid data:", data)
+        setImages([])
       }
-    } catch (error) {
-      console.error("Failed to fetch images:", error)
-    } finally {
-      setLoading(false)
+    } else {
+      const errorData = await response.text()
+      console.error("[v0] API error response:", response.status, errorData)
+      setImages([])
     }
+  } catch (error) {
+    console.error("Failed to fetch images:", error)
+    setImages([])
+  } finally {
+    setLoading(false)
   }
+}
+
 
   return (
     <ProtectedRoute>

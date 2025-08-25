@@ -11,25 +11,61 @@ export function ImageGrid({ images, loading }) {
   const [selectedImage, setSelectedImage] = useState(null)
   const { toast } = useToast()
 
+  const handleImageError = (image, e) => {
+    console.log("[v0] Image failed to load:", {
+      imageId: image.id,
+      imageUrlLength: image.imageUrl?.length,
+      imageUrlStart: image.imageUrl?.substring(0, 50),
+      isDataUrl: image.imageUrl?.startsWith("data:"),
+    })
+
+    // Fallback to placeholder
+    e.target.src = "/placeholder.svg"
+  }
+
+  const handleImageLoad = (image, e) => {
+    console.log("[v0] Image loaded successfully:", {
+      imageId: image.id,
+      imageUrlLength: image.imageUrl?.length,
+      isDataUrl: image.imageUrl?.startsWith("data:"),
+    })
+  }
+
   const handleDownload = async (image, e) => {
     e.stopPropagation()
     try {
-      const response = await fetch(image.imageUrl)
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `ai-image-${image.id}.png`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      if (image.imageUrl.startsWith("data:")) {
+        // For data URLs, create blob directly
+        const response = await fetch(image.imageUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `ai-image-${image.id}.png`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+      } else {
+        // For regular URLs
+        const response = await fetch(image.imageUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `ai-image-${image.id}.png`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+      }
 
       toast({
         title: "Download started",
         description: "Your image is being downloaded.",
       })
     } catch (error) {
+      console.error("[v0] Download failed:", error)
       toast({
         title: "Download failed",
         description: "Failed to download the image.",
@@ -102,6 +138,8 @@ export function ImageGrid({ images, loading }) {
                   src={image.imageUrl || "/placeholder.svg"}
                   alt={image.prompt}
                   className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                  onError={(e) => handleImageError(image, e)}
+                  onLoad={(e) => handleImageLoad(image, e)}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 flex items-center justify-center">
                   <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
@@ -109,7 +147,7 @@ export function ImageGrid({ images, loading }) {
               </div>
 
               <div className="space-y-2">
-                <p className="text-sm text-gray-300 line-clamp-2 leading-relaxed">{image.prompt}</p>
+                <p className="text-sm text-gray-300 line-clamp-2 leading-relaxed capitalize">{image.prompt}</p>
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>{new Date(image.createdAt).toLocaleDateString()}</span>
                   <span className="capitalize">{image.model}</span>

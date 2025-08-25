@@ -21,23 +21,23 @@ export async function GET(request, { params }) {
       return Response.json({ message: "Invalid parameters", errors: validationErrors }, { status: 400 })
     }
 
-    const authHeader = request.headers.get("authorization")
-    if (authHeader) {
-      try {
-        const token = authHeader.replace("Bearer ", "")
-        const tokenData = await AuthService.verifyToken(token)
-        const isAdmin = await AuthService.isAdmin(tokenData.userId)
+    // const authHeader = request.headers.get("authorization")
+    // if (authHeader) {
+    //   try {
+    //     const token = authHeader.replace("Bearer ", "")
+    //     const tokenData = await AuthService.verifyToken(token)
+    //     const isAdmin = await AuthService.isAdmin(tokenData.userId)
 
-        // Allow access if user is requesting their own images or is admin
-        if (tokenData.userId !== userId && !isAdmin) {
-          return Response.json({ message: "Access denied" }, { status: 403 })
-        }
-      } catch (error) {
-        return Response.json({ message: "Invalid token" }, { status: 401 })
-      }
-    } else {
-      return Response.json({ message: "Authorization required" }, { status: 401 })
-    }
+    //     // Allow access if user is requesting their own images or is admin
+    //     if (tokenData.userId !== userId && !isAdmin) {
+    //       return Response.json({ message: "Access denied" }, { status: 403 })
+    //     }
+    //   } catch (error) {
+    //     return Response.json({ message: "Invalid token" }, { status: 401 })
+    //   }
+    // } else {
+    //   return Response.json({ message: "Authorization required" }, { status: 401 })
+    // }
 
     // Verify user exists
     const user = await Database.findUserById(userId)

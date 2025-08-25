@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 export function RegisterForm({ onToggleMode }) {
   const [email, setEmail] = useState("")
@@ -15,11 +16,11 @@ export function RegisterForm({ onToggleMode }) {
   const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    console.log("hello")
     if (password !== confirmPassword) {
       toast({
         title: "Password mismatch",
@@ -40,14 +41,13 @@ export function RegisterForm({ onToggleMode }) {
 
     setLoading(true)
 
-
     try {
-    console.log(email,password)
-        await register(email, password)
+      await register(email, password)
       toast({
         title: "Account created!",
         description: "Welcome to AI Image Generator. You get 10 free credits daily!",
       })
+      router.push("/")
     } catch (error) {
       toast({
         title: "Registration failed",

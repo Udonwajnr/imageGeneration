@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 export function LoginForm({ onToggleMode }) {
   const [email, setEmail] = useState("")
@@ -14,6 +15,7 @@ export function LoginForm({ onToggleMode }) {
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const { toast } = useToast()
+  const router = useRouter()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -25,6 +27,7 @@ export function LoginForm({ onToggleMode }) {
         title: "Welcome back!",
         description: "You've successfully logged in.",
       })
+      router.push("/")
     } catch (error) {
       toast({
         title: "Login failed",
