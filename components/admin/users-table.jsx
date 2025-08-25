@@ -11,6 +11,7 @@ export function UsersTable({ users, onUserUpdate }) {
   const [loading, setLoading] = useState({})
   const { toast } = useToast()
 
+  console.log(users)
   const handleResetCredits = async (userId) => {
     setLoading((prev) => ({ ...prev, [userId]: true }))
 
@@ -48,7 +49,7 @@ export function UsersTable({ users, onUserUpdate }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {users.map((user) => (
+          {users?.users?.map((user) => (
             <div
               key={user.id}
               className="flex items-center justify-between p-4 bg-gray-800/30 rounded-lg border border-gray-700/50"

@@ -47,7 +47,7 @@ export default function AdminPage() {
   }
 
   return (
-    <AdminRoute>
+    <>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_50%)]" />
 
@@ -78,6 +78,6 @@ export default function AdminPage() {
           )}
         </main>
       </div>
-    </AdminRoute>
+    </>
   )
 }
