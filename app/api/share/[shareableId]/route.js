@@ -3,7 +3,7 @@ import { validateInput, sanitizeInput } from "@/lib/auth-middleware.js"
 
 export async function GET(request, { params }) {
   try {
-    const { shareableId } = params
+    const { shareableId } = await params
 
     // Validate shareableId parameter
     const validationErrors = validateInput(

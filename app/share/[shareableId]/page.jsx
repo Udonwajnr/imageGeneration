@@ -1,69 +1,70 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Download, ArrowLeft } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
-import Link from "next/link"
+import { useState, useEffect, use } from "react";
+import { Button } from "@/components/ui/button";
+import { Download, ArrowLeft } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import Link from "next/link";
 
 export default function SharePage({ params }) {
-  const [image, setImage] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
+  const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const { shareableId } = use(params);
 
   useEffect(() => {
-    fetchSharedImage()
-  }, [])
+    fetchSharedImage();
+  }, []);
 
   const fetchSharedImage = async () => {
     try {
-      const response = await fetch(`/api/share/${params.shareableId}`)
+      const response = await fetch(`/api/share/${shareableId}`);
       if (response.ok) {
-        const data = await response.json()
-        setImage(data)
+        const data = await response.json();
+        setImage(data);
       } else {
         toast({
           title: "Image not found",
           description: "This shared image could not be found.",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load shared image.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDownload = async () => {
     try {
-      const response = await fetch(image.imageUrl)
-      const blob = await response.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = `ai-image-${image.id}.png`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      const response = await fetch(image.imageUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `ai-image-${image.id}.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
 
       toast({
         title: "Download started",
         description: "The image is being downloaded.",
-      })
+      });
     } catch (error) {
       toast({
         title: "Download failed",
         description: "Failed to download the image.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -73,15 +74,19 @@ export default function SharePage({ params }) {
           <p className="text-gray-400">Loading shared image...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!image) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-300 mb-4">Image Not Found</h1>
-          <p className="text-gray-500 mb-6">This shared image could not be found or may have been removed.</p>
+          <h1 className="text-2xl font-bold text-gray-300 mb-4">
+            Image Not Found
+          </h1>
+          <p className="text-gray-500 mb-6">
+            This shared image could not be found or may have been removed.
+          </p>
           <Link href="/">
             <Button className="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -90,7 +95,7 @@ export default function SharePage({ params }) {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -131,13 +136,19 @@ export default function SharePage({ params }) {
               <div className="space-y-4">
                 <div>
                   <h3 className="font-medium text-gray-300 mb-2">Prompt:</h3>
-                  <p className="text-gray-400 leading-relaxed">{image.prompt}</p>
+                  <p className="text-gray-400 leading-relaxed">
+                    {image.prompt}
+                  </p>
                 </div>
 
                 {image.negativePrompt && (
                   <div>
-                    <h3 className="font-medium text-gray-300 mb-2">Negative Prompt:</h3>
-                    <p className="text-gray-400 leading-relaxed">{image.negativePrompt}</p>
+                    <h3 className="font-medium text-gray-300 mb-2">
+                      Negative Prompt:
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed">
+                      {image.negativePrompt}
+                    </p>
                   </div>
                 )}
 
@@ -154,11 +165,15 @@ export default function SharePage({ params }) {
                   </div>
                   <div>
                     <span className="text-gray-500">Created:</span>
-                    <p className="text-gray-300">{new Date(image.createdAt).toLocaleDateString()}</p>
+                    <p className="text-gray-300">
+                      {new Date(image.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
                     <span className="text-gray-500">Time:</span>
-                    <p className="text-gray-300">{new Date(image.createdAt).toLocaleTimeString()}</p>
+                    <p className="text-gray-300">
+                      {new Date(image.createdAt).toLocaleTimeString()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -185,5 +200,5 @@ export default function SharePage({ params }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
